@@ -1,6 +1,9 @@
 package hashing
 
 import (
+	"crypto/md5"
+	"fmt"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -11,7 +14,11 @@ func HashAndSalt(password string) (string, error) {
 }
 
 func CheckHashString(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-
-	return err == nil
+	hasher := md5.New()
+	hasher.Write([]byte(password))
+	passwordHash := fmt.Sprintf("%x", hasher.Sum(nil))
+	if condition := passwordHash == hash; condition {
+		return true
+	}
+	return false
 }
