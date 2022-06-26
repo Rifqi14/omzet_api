@@ -68,5 +68,5 @@ func (jwtMiddleware JwtMiddleware) New(ctx *fiber.Ctx) (err error) {
 	claims.Id = fmt.Sprintf("%v", jweRes["id"])
 	jwtMiddleware.Contract.UserID = uint(str.StringToInt(claims.Id))
 
-	return
+	return ctx.Next()
 }

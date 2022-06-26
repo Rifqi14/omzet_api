@@ -11,4 +11,6 @@ type Transaction struct {
 	CreatedBy  uint      `json:"created_by"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"default:current_timestamp;not null"`
 	UpdatedBy  uint      `json:"updated_by"`
+	Merchant   Merchant  `json:"merchant" gorm:"foreignkey:MerchantID"`
+	Outlet     Outlet    `json:"outlet" gorm:"foreignkey:OutletID"`
 }

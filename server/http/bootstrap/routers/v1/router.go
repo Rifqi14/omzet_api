@@ -18,4 +18,10 @@ func (routers Routers) V1Route() {
 		Handler:    routers.Handler,
 	}
 	authenticationRoute.AuthRoute()
+
+	omzetRoute := OmzetRoute{
+		RouteGroup: apiV1,
+		Handler:    routers.Handler,
+	}
+	omzetRoute.OmzetRoute()
 }
