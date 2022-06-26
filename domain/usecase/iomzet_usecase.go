@@ -7,4 +7,6 @@ import (
 
 type IOmzetUseCase interface {
 	ReportByMerchant(merchantId int, req request.ReportMerchantRequest) (res []view_models.ReportMerchantVm, pagination view_models.PaginationVm, err error)
+
+	ReportByOutlet(outletId int, req request.ReportMerchantRequest) (res []view_models.ReportOutletVm, pagination view_models.PaginationVm, err error)
 }

@@ -35,6 +35,9 @@ func (h OmzetHandler) GetReportMerchant(ctx *fiber.Ctx) (err error) {
 	// Service processing
 	uc := v1.NewOmzetUseCase(h.UcContract)
 	data, meta, err := uc.ReportByMerchant(merchantId, *req)
+	if err != nil && err.Error() == messages.Unauthorized {
+		return responses.NewResponse(responses.ResponseError(nil, nil, fiber.StatusUnauthorized, messages.Unauthorized, err)).Send(ctx)
+	}
 	if err != nil {
 		return responses.NewResponse(responses.ResponseError(nil, nil, fiber.StatusInternalServerError, messages.FailedLoadPayload, err)).Send(ctx)
 	}
@@ -44,5 +47,25 @@ func (h OmzetHandler) GetReportMerchant(ctx *fiber.Ctx) (err error) {
 }
 
 func (h OmzetHandler) GetReportOutlet(ctx *fiber.Ctx) (err error) {
-	panic("Implement me")
+	req := new(request.ReportMerchantRequest)
+	if err := ctx.QueryParser(req); err != nil {
+		return responses.NewResponse(responses.ResponseError(nil, nil, fiber.StatusBadRequest, messages.FailedLoadPayload, err)).Send(ctx)
+	}
+	outlet_id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		return responses.NewResponse(responses.ResponseError(nil, nil, fiber.StatusBadRequest, messages.FailedLoadPayload, err)).Send(ctx)
+	}
+
+	// Service processing
+	uc := v1.NewOmzetUseCase(h.UcContract)
+	data, meta, err := uc.ReportByOutlet(outlet_id, *req)
+	if err != nil && err.Error() == messages.Unauthorized {
+		return responses.NewResponse(responses.ResponseError(nil, nil, fiber.StatusUnauthorized, messages.Unauthorized, err)).Send(ctx)
+	}
+	if err != nil {
+		return responses.NewResponse(responses.ResponseError(nil, nil, fiber.StatusInternalServerError, messages.FailedLoadPayload, err)).Send(ctx)
+	}
+
+	// Response
+	return responses.NewResponse(responses.ResponseSuccess(data, meta, "Success")).Send(ctx)
 }

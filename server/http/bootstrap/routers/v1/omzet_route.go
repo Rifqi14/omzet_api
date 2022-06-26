@@ -24,4 +24,5 @@ func (r OmzetRoute) OmzetRoute() {
 	})
 	omzetRoute.Use(jwtMiddleware.New)
 	omzetRoute.Get("/merchant/:id", handler.GetReportMerchant)
+	omzetRoute.Get("/outlet/:id", handler.GetReportOutlet)
 }

@@ -37,7 +37,39 @@ func (uc OmzetUseCase) ReportByMerchant(merchantId int, req request.ReportMercha
 		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "parse-end-period")
 		return nil, pagination, err
 	}
-	res = view_models.NewReportVm().BuildMerchant(reports, date.Day(), int(date.Month()), int(date.Year()), int(limit), int(offset), int(page))
+	res, err = view_models.NewReportVm().BuildMerchant(reports, date.Day(), int(date.Month()), int(date.Year()), int(limit), int(offset), int(page), uc.UserID)
+	if err != nil {
+		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "build-report-merchant")
+		return nil, pagination, err
+	}
+
+	pagination = uc.SetPaginationResponse(page, limit, int64(date.Day()))
+
+	return res, pagination, nil
+}
+
+func (uc OmzetUseCase) ReportByOutlet(outletId int, req request.ReportMerchantRequest) (res []view_models.ReportOutletVm, pagination view_models.PaginationVm, err error) {
+	db := uc.DB
+	repo := query.NewQueryOmzetRepository(db)
+
+	offset, limit, page, orderBy, sort := uc.SetPaginationParameter(req.Offset, req.Limit, req.OrderBy, req.Sort)
+
+	reports, _, err := repo.ReportByOutlet(outletId, req.Search, orderBy, sort, req.StartPeriod, req.EndPeriod, limit, offset)
+	if err != nil {
+		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "query-report-outlet")
+		return nil, pagination, err
+	}
+
+	date, err := time.Parse("2006-01-02", req.EndPeriod)
+	if err != nil {
+		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "parse-end-period")
+		return nil, pagination, err
+	}
+	res, err = view_models.NewReportVm().BuildOutlet(reports, date.Day(), int(date.Month()), int(date.Year()), int(limit), int(offset), int(page), uc.UserID)
+	if err != nil {
+		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "build-report-outlet")
+		return nil, pagination, err
+	}
 
 	pagination = uc.SetPaginationResponse(page, limit, int64(date.Day()))
 
